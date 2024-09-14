@@ -18,6 +18,10 @@ func main() {
 		fmt.Fprintln(w, "OK")
 		w.WriteHeader(http.StatusOK)
 	})
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "hello eisa")
+		w.WriteHeader(http.StatusOK)
+	})
 
 	server := &http.Server{
 		Addr:    ":8080",
