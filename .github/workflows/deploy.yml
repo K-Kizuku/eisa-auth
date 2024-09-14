@@ -32,10 +32,15 @@ jobs:
           password: "${{ steps.auth.outputs.access_token }}"
           registry: "${{ secrets.GCP_REGION }}-docker.pkg.dev"
 
-      - name: Build and Push Container
-        run: |-
-          docker build  -f ./docker/prod/Dockerfile ./
+      - name: Build and Push Docker Image with SHA and latest Tag
+        run: |
+          docker build -t "${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_REPOSITORY_ID }}/${{ secrets.GCP_SERVICE }}:${{ github.sha }}" \
+                      -t "${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_REPOSITORY_ID }}/${{ secrets.GCP_SERVICE }}:latest" \
+                      -f ./docker/prod/Dockerfile ./
+
+          # Push both SHA and latest tagged images
           docker push "${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_REPOSITORY_ID }}/${{ secrets.GCP_SERVICE }}:${{ github.sha }}"
+          docker push "${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_REPOSITORY_ID }}/${{ secrets.GCP_SERVICE }}:latest"
 
       - name: Deploy to Cloud Run
         id: deploy
