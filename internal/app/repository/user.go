@@ -31,6 +31,20 @@ func (r *UserRepository) FindUserByID(ctx context.Context, id string) (*entity.U
 	return e, nil
 }
 
+func (r *UserRepository) FindUserByEmail(ctx context.Context, email string) (*entity.User, error) {
+	user, err := r.queries.GetUserByEmail(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+	e := &entity.User{
+		ID:       user.UserID,
+		Username: user.Name,
+		Password: user.HashedPassword,
+		Email:    user.Mail,
+	}
+	return e, nil
+}
+
 func (r *UserRepository) Create(ctx context.Context, user entity.User) error {
 	_, err := r.queries.CreateUser(ctx, query.CreateUserParams{
 		UserID:         user.ID,

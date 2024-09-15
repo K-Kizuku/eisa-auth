@@ -8,6 +8,7 @@ import (
 
 type IUserRepository interface {
 	FindUserByID(ctx context.Context, id string) (*entity.User, error)
+	FindUserByEmail(ctx context.Context, email string) (*entity.User, error)
 	Create(ctx context.Context, user entity.User) error
 	UpdatePassword(ctx context.Context, id, password string) error
 	UpdateEisaFile(ctx context.Context, id, eisaFile string) error
