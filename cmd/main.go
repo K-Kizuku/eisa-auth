@@ -16,8 +16,8 @@ import (
 )
 
 func main() {
-	ctx := context.Background()
 	env.LoadEnv()
+	ctx := context.Background()
 	h := di.InitHandler()
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {

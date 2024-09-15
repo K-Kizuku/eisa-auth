@@ -9,11 +9,12 @@ import (
 	"github.com/K-Kizuku/eisa-auth/pkg/hash"
 	"github.com/K-Kizuku/eisa-auth/pkg/jwt"
 	"github.com/K-Kizuku/eisa-auth/pkg/middleware"
+	"github.com/K-Kizuku/eisa-auth/pkg/uuid"
 )
 
 type IUserService interface {
 	FindUserByID(ctx context.Context, id string) (*entity.User, error)
-	Create(ctx context.Context, user entity.User) error
+	Create(ctx context.Context, user entity.User) (*entity.User, error)
 	UpdatePassword(ctx context.Context, id, password string) error
 	UpdateEisaFile(ctx context.Context, id, eisaFile string) error
 	CheckID(ctx context.Context, id string) error
@@ -34,14 +35,18 @@ func (s *UserService) FindUserByID(ctx context.Context, id string) (*entity.User
 	return s.repo.FindUserByID(ctx, id)
 }
 
-func (s *UserService) Create(ctx context.Context, user entity.User) error {
+func (s *UserService) Create(ctx context.Context, user entity.User) (*entity.User, error) {
 	u := entity.User{
-		ID:       user.ID,
+		ID:       uuid.New(),
 		Username: user.Username,
 		Password: hash.EncryptPassword(user.Password),
 		Email:    user.Email,
 	}
-	return s.repo.Create(ctx, u)
+	createdUser, err := s.repo.Create(ctx, u)
+	if err != nil {
+		return nil, err
+	}
+	return createdUser, nil
 }
 
 func (s *UserService) UpdatePassword(ctx context.Context, id, password string) error {

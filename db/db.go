@@ -10,7 +10,6 @@ import (
 	"cloud.google.com/go/cloudsqlconn"
 	"github.com/K-Kizuku/eisa-auth/db/sql/query"
 	env "github.com/K-Kizuku/eisa-auth/pkg/config"
-	"github.com/K-Kizuku/techer-me-backend/pkg/config"
 	"github.com/jackc/pgx/v5"
 )
 
@@ -24,13 +23,13 @@ func New() *query.Queries {
 }
 
 func Init() (*pgx.Conn, error) {
-	if config.Mode == "dev" {
-		conn, err := pgx.Connect(context.Background(), "user=pqgotest dbname=pqgotest sslmode=verify-full")
+	if env.Mode == "dev" {
+		conn, err := pgx.Connect(context.Background(), "postgres://postgres:password@db:5432/example?sslmode=disable")
 		if err != nil {
 			return nil, err
 		}
 		return conn, err
-	} else if config.Mode == "prod" {
+	} else if env.Mode == "prod" {
 		// d, err := cloudsqlconn.NewDialer(context.Background())
 		// if err != nil {
 		// 	return nil, err

@@ -33,14 +33,15 @@ func (h *UserHandler) SignUp() func(http.ResponseWriter, *http.Request) error {
 			Password: req.Password,
 			Email:    req.Email,
 		}
-		if err := h.us.Create(r.Context(), u); err != nil {
-			return err
-		}
-		token, err := h.us.GenerateJWT(r.Context(), u.ID)
+		createdUser, err := h.us.Create(r.Context(), u)
 		if err != nil {
 			return err
 		}
-		url, err := h.us.GenerateSignedURL(r.Context(), u.ID)
+		token, err := h.us.GenerateJWT(r.Context(), createdUser.ID)
+		if err != nil {
+			return err
+		}
+		url, err := h.us.GenerateSignedURL(r.Context(), createdUser.ID)
 		if err != nil {
 			return err
 		}

@@ -9,6 +9,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - app-network
+
   db:
     image: postgres
     restart: always
@@ -28,8 +31,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - app-network
+
 volumes:
   db-data:
-# secrets:
-#   db-password:
-#     file: db/password.txt
+
+networks:
+  app-network:
+    driver: bridge
