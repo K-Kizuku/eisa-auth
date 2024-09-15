@@ -1,7 +1,7 @@
 services:
   server:
     build:
-      dockerfile: ./docker/dev/Dockerfile
+      dockerfile: ./docker/prod/Dockerfile
       context: .
       # target: final
     ports:

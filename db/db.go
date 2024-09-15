@@ -52,6 +52,7 @@ func Init() (*pgx.Conn, error) {
 		// if usePrivate != "" {
 		// 	opts = append(opts, cloudsqlconn.WithDefaultDialOptions(cloudsqlconn.WithPrivateIP()))
 		// }
+		opts = append(opts, cloudsqlconn.WithCredentialsFile("./key.json"))
 		d, err := cloudsqlconn.NewDialer(context.Background(), opts...)
 		if err != nil {
 			return nil, err
