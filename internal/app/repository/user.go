@@ -6,6 +6,7 @@ import (
 	"github.com/K-Kizuku/eisa-auth/db/sql/query"
 	"github.com/K-Kizuku/eisa-auth/internal/domain/entity"
 	"github.com/K-Kizuku/eisa-auth/internal/domain/repository"
+	"github.com/K-Kizuku/eisa-auth/pkg/errors"
 )
 
 type UserRepository struct {
@@ -19,7 +20,7 @@ func NewUserRepository(queries *query.Queries) repository.IUserRepository {
 func (r *UserRepository) FindUserByID(ctx context.Context, id string) (*entity.User, error) {
 	user, err := r.queries.GetUserByIDWithEisaFiles(ctx, id)
 	if err != nil {
-		return nil, err
+		return nil, errors.HandleDBError(err)
 	}
 	e := &entity.User{
 		ID:       user.UserID,
@@ -34,7 +35,7 @@ func (r *UserRepository) FindUserByID(ctx context.Context, id string) (*entity.U
 func (r *UserRepository) FindUserByEmail(ctx context.Context, email string) (*entity.User, error) {
 	user, err := r.queries.GetUserByEmail(ctx, email)
 	if err != nil {
-		return nil, err
+		return nil, errors.HandleDBError(err)
 	}
 	e := &entity.User{
 		ID:       user.UserID,
@@ -53,7 +54,7 @@ func (r *UserRepository) Create(ctx context.Context, user entity.User) (*entity.
 		HashedPassword: user.Password,
 	})
 	if err != nil {
-		return nil, err
+		return nil, errors.HandleDBError(err)
 	}
 	createdUser := &entity.User{
 		ID:       u.UserID,
@@ -61,7 +62,7 @@ func (r *UserRepository) Create(ctx context.Context, user entity.User) (*entity.
 		Password: u.HashedPassword,
 		Email:    u.Mail,
 	}
-	return createdUser, err
+	return createdUser, nil
 }
 
 func (r *UserRepository) UpdatePassword(ctx context.Context, id, password string) error {
@@ -70,7 +71,7 @@ func (r *UserRepository) UpdatePassword(ctx context.Context, id, password string
 		HashedPassword: password,
 	})
 	if err != nil {
-		return err
+		return errors.HandleDBError(err)
 	}
 	return nil
 }
@@ -81,7 +82,7 @@ func (r *UserRepository) UpdateEisaFile(ctx context.Context, id, eisaFile string
 		FilePath: eisaFile,
 	})
 	if err != nil {
-		return err
+		return errors.HandleDBError(err)
 	}
 	return nil
 }

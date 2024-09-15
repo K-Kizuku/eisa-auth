@@ -2,10 +2,12 @@ package service
 
 import (
 	"context"
-	"errors"
+	nomal_errors "errors"
+	"net/http"
 
 	"github.com/K-Kizuku/eisa-auth/internal/domain/entity"
 	"github.com/K-Kizuku/eisa-auth/internal/domain/repository"
+	"github.com/K-Kizuku/eisa-auth/pkg/errors"
 	"github.com/K-Kizuku/eisa-auth/pkg/hash"
 	"github.com/K-Kizuku/eisa-auth/pkg/jwt"
 	"github.com/K-Kizuku/eisa-auth/pkg/middleware"
@@ -60,7 +62,7 @@ func (s *UserService) UpdateEisaFile(ctx context.Context, id, eisaFile string) e
 func (s *UserService) CheckID(ctx context.Context, id string) error {
 	tokenID := ctx.Value(middleware.UserIDKey).(string)
 	if id != tokenID {
-		return errors.New("user id is not match")
+		return errors.New(http.StatusForbidden, nomal_errors.New("token id and request id are different"))
 	}
 	return nil
 }
@@ -71,16 +73,15 @@ func (s *UserService) VerifyPassword(ctx context.Context, email, password string
 		return "", err
 	}
 	if err := hash.CompareHashPassword(user.Password, password); err != nil {
-		return "", err
+		return "", errors.New(http.StatusUnauthorized, nomal_errors.New("password is incorrect"))
 	}
-
 	return user.ID, nil
 }
 
 func (s *UserService) GenerateJWT(ctx context.Context, id string) (string, error) {
 	jwt, err := jwt.GenerateToken(id)
 	if err != nil {
-		return "", err
+		return "", errors.New(http.StatusInternalServerError, err)
 	}
 	return jwt, nil
 }

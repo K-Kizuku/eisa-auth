@@ -7,6 +7,7 @@ import (
 	userschema "github.com/K-Kizuku/eisa-auth/internal/app/handler/schema/users"
 	"github.com/K-Kizuku/eisa-auth/internal/app/service"
 	"github.com/K-Kizuku/eisa-auth/internal/domain/entity"
+	"github.com/K-Kizuku/eisa-auth/pkg/errors"
 )
 
 type IUserHandler interface {
@@ -49,10 +50,10 @@ func (h *UserHandler) SignUp() func(http.ResponseWriter, *http.Request) error {
 			Token:    token,
 			SigndURL: url,
 		}
-		w.WriteHeader(http.StatusCreated)
 		if err := json.NewEncoder(w).Encode(res); err != nil {
 			return err
 		}
+		w.WriteHeader(http.StatusCreated)
 		return nil
 	}
 }
@@ -61,7 +62,7 @@ func (h *UserHandler) SignIn() func(http.ResponseWriter, *http.Request) error {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		var req userschema.SignInRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			return err
+			return errors.New(http.StatusBadRequest, err)
 		}
 		id, err := h.us.VerifyPassword(r.Context(), req.Email, req.Password)
 		if err != nil {
@@ -77,8 +78,9 @@ func (h *UserHandler) SignIn() func(http.ResponseWriter, *http.Request) error {
 		}
 		w.WriteHeader(http.StatusOK)
 		if err := json.NewEncoder(w).Encode(res); err != nil {
-			return err
+			return errors.New(http.StatusInternalServerError, err)
 		}
+		w.WriteHeader(http.StatusOK)
 		return nil
 	}
 }
