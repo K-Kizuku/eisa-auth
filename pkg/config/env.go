@@ -18,6 +18,7 @@ var (
 	GoogleAccessID               string
 	Name                         string
 	Basket                       string
+	JWTSecret                    string
 )
 
 // .envを呼び出します。
@@ -38,4 +39,5 @@ func LoadEnv() {
 	// GoogleAccessID = os.Getenv("GOOGLE_ACCESS_ID")
 	// Name = os.Getenv("NAME")
 	Basket = os.Getenv("BUCKET_NAME")
+	JWTSecret = os.Getenv("JWT_SECRET")
 }
