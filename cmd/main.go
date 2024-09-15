@@ -9,10 +9,16 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/K-Kizuku/eisa-auth/internal/di"
+	env "github.com/K-Kizuku/eisa-auth/pkg/config"
+	"github.com/K-Kizuku/eisa-auth/pkg/handler"
 )
 
 func main() {
 	ctx := context.Background()
+	env.LoadEnv()
+	h := di.InitHandler()
 	mux := http.NewServeMux()
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "OK")
@@ -22,6 +28,9 @@ func main() {
 		fmt.Fprintln(w, "hello eisa")
 		w.WriteHeader(http.StatusOK)
 	})
+
+	mux.Handle("POST /signup", handler.AppHandler(h.UserHandler.SignUp()))
+	mux.Handle("POST /signin", handler.AppHandler(h.UserHandler.SignIn()))
 
 	server := &http.Server{
 		Addr:    ":8080",
