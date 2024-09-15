@@ -2,6 +2,10 @@
 SELECT user_id, mail, name, hashed_password FROM users
 WHERE user_id = $1 LIMIT 1;
 
+-- name: GetUserByEmail :one
+SELECT user_id, mail, name, hashed_password FROM users
+WHERE mail = $1 LIMIT 1;
+
 -- name: GetUserByIDWithEisaFiles :one
 SELECT u.user_id, u.mail, u.name, u.hashed_password, ef.file_path
 FROM users u

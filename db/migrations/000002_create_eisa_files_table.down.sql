@@ -1,0 +1,1 @@
+DROP TABLE IF EXISTS eisa_files;
